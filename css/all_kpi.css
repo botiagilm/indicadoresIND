@@ -1,0 +1,179 @@
+@font-face {
+    font-family: 'Bronkoh';
+    src: URL('../fonts/bronkoh/Bronkoh-Bold.otf') format('opentype');
+}
+
+.general{
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    background-color:black !important;
+}
+
+.lpa{
+    background-image: url('../LPA/Indicadores.jpg');
+	background-color:white;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #000000  !important;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+
+.general_ligth{
+    background-image: url('../img/fondo_white.png');
+	background-color:white;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #000000  !important;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+.footer{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: black !important;            
+    border-top-style: groove;
+    border-top-width:thin !important;
+    border-top-color:white !important;
+}
+
+.footer_transp{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: transparent !important;
+}
+
+.fotter_label{
+    -webkit-text-stroke: 1px black;
+    font-family: 'Bronkoh' !important;
+    font-weight:400 !important;
+    color:black;
+    font-size: 2.4vw !important;
+    display:inline !important;
+}
+
+.all_label{    
+    font-family: "Bronkoh" !important;
+    font-weight:400 !important;
+    color:black;
+    text-align:center;
+}
+
+.all_label2{
+    -webkit-text-stroke: 1px black;
+    font-family: "Bronkoh" !important;
+    font-weight:400 !important;
+    color:black;
+}
+
+.title_stroke{
+    -webkit-text-stroke: 1px black;
+}
+
+.estatus{
+    font-size: 6.5vw !important;
+}
+.extra{
+    font-size: 5vw !important;
+}
+.extra1{
+    font-size: 4vw !important;
+}
+.extra2{
+    font-size: 2.5vw !important;    
+}
+.extra3{
+    font-size: 3vw !important;    
+}
+.extra_detalle{
+    font-size: 5vw !important;
+}
+.extra_all{
+    font-size: 6vw !important;
+}
+.extra_all2{
+    font-size: 9vw !important;
+}
+.extra_paro{
+    font-size: 5.4vw !important;
+}
+
+.velocidadVerde{
+    color: #008f39  !important;
+}
+    
+.velocidadAmarillo{
+    color: yellow  !important;
+}
+    
+.velocidadRojo{
+    color: #BF1212  !important;
+}
+    
+.velocidadNegro{
+    color: #000000  !important;
+}
+    
+.velocidadBlanco{
+    color: #FFFFFF  !important;
+}
+    
+.valorOK{
+    color: #008f39 !important;
+    -webkit-text-stroke: 1px black;
+}
+.valorNOK{
+    color: #BF1212  !important;
+    -webkit-text-stroke: 1px black;
+}
+.valorVR{
+    color: yellow !important;
+    -webkit-text-stroke: 1px black;
+}
+.valorNC{
+    color: #00aae4  !important;
+}
+.valorPNP{
+    color:red !important;
+}
+
+.QUEMADO{
+	background-color:red !important;
+}
+.MONTAR{
+	background-color:green !important;
+}
+.NO_MONTAR{
+	background-color:yellow !important;
+}
+.A_PUNTO{
+	background-color:yellow !important;
+}
+
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
