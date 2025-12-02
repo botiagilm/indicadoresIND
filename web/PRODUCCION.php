@@ -79,7 +79,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     <!-- GRID PRINCIPAL -->
     <div class="h-[90%] grid grid-cols-12 grid-rows-6 gap-4">
 
-        <!-- 1. SEM�FORO PRODUCCI�N (Col 1-7, Row 1-4) -->
+        <!-- 1. SEMÁFORO PRODUCCIÓN (Col 1-7, Row 1-4) -->
         <div id="box-produccion" class="col-span-7 row-span-6 rounded-2xl shadow-2xl flex flex-col justify-center items-center relative transition-all duration-500">
             <div class="absolute top-4 left-6 text-xl uppercase tracking-[0.2em] opacity-80">Produccion</div>
             <!--<div class="absolute opacity-10 text-[15rem] font-black select-none pointer-events-none">PROD</div>-->
@@ -119,7 +119,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
         <!-- 3. BARRA INFERIOR (Col 1-12, Row 5-6) 
         <div class="col-span-12 row-span-2 bg-slate-900 rounded-2xl border border-slate-700 flex p-4 shadow-xl divide-x divide-slate-700">
 
-             A. Acumulado Producci�n Mes (30% ancho) 
+             A. Acumulado Produccion Mes (30% ancho) 
             <div class="w-[50%] flex flex-col justify-center px-6">
                 <h3 class="text-blue-400 uppercase tracking-widest text-lg flex items-center gap-2">
                     <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Produccion Mes
@@ -151,7 +151,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     </div>
 
     <script>
-        // --- ACTUALIZACI�N ---
+        // --- ACTUALIZACIÓN ---
         const formatNum = new Intl.NumberFormat('es-MX');
         let timerActualizacion = null;
 
@@ -212,7 +212,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                         workc = response.data[0].WORK_CENTER;
                     let semaforo_prod = valida_meta(acum_dia, meta_dia);
                     let porcentaje = (acum_dia / meta_dia) * 100;
-                    // 1. SEM�FORO / PRODUCCI�N
+                    // 1. SEMÁFORO / PRODUCCIÓN
                     const box = document.getElementById('box-produccion');
                     if (semaforo_prod === 'RED') {
                         box.className = "col-span-7 row-span-6 rounded-2xl shadow-2xl flex flex-col justify-center items-center relative transition-all duration-500 estado-rojo";

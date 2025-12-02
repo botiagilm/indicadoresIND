@@ -37,14 +37,14 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             border: 3px solid #ffffffff;
             box-shadow: 0 10px 25px -5px rgba(58, 58, 58, 0.4);
         }
-        /* VERDE: Producci�n �ptima */
+        /* VERDE: Producción Óptima */
         .card-verde {
             background: linear-gradient(145deg, #059669, #047857);
             border: 3px solid #34d399;
             box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
         }
 
-        /* ROJO: Alerta (Animaci�n de Respiraci�n) */
+        /* ROJO: Alerta (Animación de Respiración) */
         @keyframes breatheRed {
             0% {
                 background-color: #991b1b;
@@ -69,12 +69,12 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             animation: breatheRed 2.5s infinite ease-in-out;
         }
 
-        /* Tipograf�a Digital */
+        /* Tipografía Digital */
         .font-mono {
             font-family: 'Roboto Mono', monospace;
         }
 
-        /* Utiler�a para fondo de texto */
+        /* Utilería para fondo de texto */
         .bg-text-shadow {
             text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
         }
@@ -96,20 +96,20 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     </div>
 </header>
 
-<!-- GRID DE L�NEAS -->
+<!-- GRID DE LÍNEAS -->
 <div id="grid-lineas" class="grid grid-cols-4 gap-4 h-[90%] w-full">
 
     <!-- El contenido se genera con JS -->
 </div>
 
 <script>
-    // --- 1. DATOS DUMMY (SIMULACI�N DE BASE DE DATOS) ---
-    // Estos son los datos base que usar�a el sistema
+    // --- 1. DATOS DUMMY (SIMULACIÓN DE BASE DE DATOS) ---
+    // Estos son los datos base que usara el sistema
 
     const formatNum = new Intl.NumberFormat('es-MX');
     let timerActualizacion = null;
-    // --- 2. SIMULACI�N DE API ---
-    // Esta funci�n imita el fetch('api.php')
+    // --- 2. SIMULACIÓN DE API ---
+    // Esta función imita el fetch('api.php')
     function exec_getdata() {
 
         let id = document.getElementById("indicador_id").value;
@@ -132,7 +132,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             .catch(err => console.error("Error:", err));
     }
 
-    // --- 3. ACTUALIZACI�N DEL DASHBOARD ---
+    // --- 3. ACTUALIZACIÓN DEL DASHBOARD ---
     function updateDashboard(params,transaction,indicador,time) {
         // limpiar timeout previo
         if (timerActualizacion) {
@@ -172,7 +172,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                         workc = line.WORK_CENTER,
                         estado = valida_meta(acum_dia, meta_dia),
                         porcentaje = (acum_dia / meta_dia)*100;
-                    // Determinar estilos seg�n estado
+                    // Determinar estilos según estado
                     const isVerde = estado === 'GREEN';
                     const cssClass =  isVerde ? 'card-verde' : estado === 'BLACK' ? 'card-gris':'card-rojo';
                     const textColor = 'text-white';
@@ -189,7 +189,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                             <h2 class="text-2xl font-bold uppercase tracking-wider bg-text-shadow opacity-90">${workc}</h2>
                         </div>
 
-                        <!-- Cuerpo Principal (N�mero) -->
+                        <!-- Cuerpo Principal (Número) -->
                         <div class="flex-1 flex flex-col justify-center items-center z-10 my-2">
                             <div class="text-6xl lg:text-7xl font-mono font-bold leading-none drop-shadow-xl tracking-tighter">
                                 ${formatNum.format(acum_dia)}
@@ -214,7 +214,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                             </div>
                         </div>-->
                         
-                        <!-- Decoraci�n Brillante -->
+                        <!-- Decoración Brillante -->
                         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent opacity-50 pointer-events-none"></div>
                     </div>
                 `;
