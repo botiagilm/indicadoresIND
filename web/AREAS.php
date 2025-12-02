@@ -158,7 +158,8 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
         const container = document.getElementById('grid-lineas');
         fetch('../api/functions.php', {
                 method: "POST",
-                body: formData
+                body: formData,
+                timeout:10000 // 10 segundos
             })
             .then((response) => response.json())
             .then((response) => {
