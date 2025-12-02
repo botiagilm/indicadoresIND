@@ -153,6 +153,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     <script>
         // --- ACTUALIZACI�N ---
         const formatNum = new Intl.NumberFormat('es-MX');
+        let timerActualizacion = null;
 
         function exec_getdata() {
             let id = document.getElementById("indicador_id").value;
@@ -169,13 +170,17 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                     let time = response.data[0].duracion * 1000;
                     let params = response.data[0].params;
                     let url = response.data[0].T_URL;
-                    setInterval(updateDashboard, time, params, url, response.indicador);
-                    updateDashboard(params, url, response.indicador);
+                    //setInterval(updateDashboard, time, params, url, response.indicador);
+                    updateDashboard(params, url, response.indicador,time);
                 })
                 .catch(err => console.error("Error:", err));
         }
 
-        function updateDashboard(params, transaction, indicador) {
+        function updateDashboard(params, transaction, indicador,time) {
+            // limpiar timeout previo
+            if (timerActualizacion) {
+                clearTimeout(timerActualizacion);
+            }
             // Reloj
             const now = new Date();
             document.getElementById('reloj').innerText = now.toLocaleTimeString('es-MX', {
@@ -231,9 +236,13 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
 
                     // Scrap Mensual (Nuevo)
                     //document.getElementById('val-mensual-scrap').innerText = formatNum.format(0);
-
+                    timerActualizacion = setTimeout(updateDashboard,time,params,transaction, indicador,time);
                 })
-                .catch(err => console.error("Error:", err));
+                .catch(err => {
+                    console.error("Error:", err)
+                    let time_new =  time *1.15;
+                    timerActualizacion = setTimeout(updateDashboard,time_new,params,transaction, indicador,time);   
+                });
         }
 
 

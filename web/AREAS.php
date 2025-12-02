@@ -37,14 +37,14 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             border: 3px solid #ffffffff;
             box-shadow: 0 10px 25px -5px rgba(58, 58, 58, 0.4);
         }
-        /* VERDE: Producción Óptima */
+        /* VERDE: Producciï¿½n ï¿½ptima */
         .card-verde {
             background: linear-gradient(145deg, #059669, #047857);
             border: 3px solid #34d399;
             box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
         }
 
-        /* ROJO: Alerta (Animación de Respiración) */
+        /* ROJO: Alerta (Animaciï¿½n de Respiraciï¿½n) */
         @keyframes breatheRed {
             0% {
                 background-color: #991b1b;
@@ -69,12 +69,12 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             animation: breatheRed 2.5s infinite ease-in-out;
         }
 
-        /* Tipografía Digital */
+        /* Tipografï¿½a Digital */
         .font-mono {
             font-family: 'Roboto Mono', monospace;
         }
 
-        /* Utilería para fondo de texto */
+        /* Utilerï¿½a para fondo de texto */
         .bg-text-shadow {
             text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
         }
@@ -96,20 +96,20 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     </div>
 </header>
 
-<!-- GRID DE LÍNEAS -->
+<!-- GRID DE Lï¿½NEAS -->
 <div id="grid-lineas" class="grid grid-cols-4 gap-4 h-[90%] w-full">
 
     <!-- El contenido se genera con JS -->
 </div>
 
 <script>
-    // --- 1. DATOS DUMMY (SIMULACIÓN DE BASE DE DATOS) ---
-    // Estos son los datos base que usaría el sistema
+    // --- 1. DATOS DUMMY (SIMULACIï¿½N DE BASE DE DATOS) ---
+    // Estos son los datos base que usarï¿½a el sistema
 
     const formatNum = new Intl.NumberFormat('es-MX');
-
-    // --- 2. SIMULACIÓN DE API ---
-    // Esta función imita el fetch('api.php')
+    let timerActualizacion = null;
+    // --- 2. SIMULACIï¿½N DE API ---
+    // Esta funciï¿½n imita el fetch('api.php')
     function exec_getdata() {
 
         let id = document.getElementById("indicador_id").value;
@@ -126,14 +126,18 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                 let time = response.data[0].duracion * 1000;
                 let params = response.data[0].params;
                 let url = response.data[0].T_URL;
-                setInterval(updateDashboard, time, params,url,response.indicador);
-                updateDashboard(params,url,response.indicador);
+                //setInterval(updateDashboard, time, params,url,response.indicador);
+                updateDashboard(params,url,response.indicador,time);
             })
             .catch(err => console.error("Error:", err));
     }
 
-    // --- 3. ACTUALIZACIÓN DEL DASHBOARD ---
-    function updateDashboard(params,transaction,indicador) {
+    // --- 3. ACTUALIZACIï¿½N DEL DASHBOARD ---
+    function updateDashboard(params,transaction,indicador,time) {
+        // limpiar timeout previo
+        if (timerActualizacion) {
+            clearTimeout(timerActualizacion);
+        }
         // A. Reloj
         const now = new Date();
         document.getElementById('reloj').innerText = now.toLocaleTimeString('es-MX', {
@@ -167,7 +171,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                         workc = line.WORK_CENTER,
                         estado = valida_meta(acum_dia, meta_dia),
                         porcentaje = (acum_dia / meta_dia)*100;
-                    // Determinar estilos según estado
+                    // Determinar estilos segï¿½n estado
                     const isVerde = estado === 'GREEN';
                     const cssClass =  isVerde ? 'card-verde' : estado === 'BLACK' ? 'card-gris':'card-rojo';
                     const textColor = 'text-white';
@@ -184,7 +188,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                             <h2 class="text-2xl font-bold uppercase tracking-wider bg-text-shadow opacity-90">${workc}</h2>
                         </div>
 
-                        <!-- Cuerpo Principal (Número) -->
+                        <!-- Cuerpo Principal (Nï¿½mero) -->
                         <div class="flex-1 flex flex-col justify-center items-center z-10 my-2">
                             <div class="text-6xl lg:text-7xl font-mono font-bold leading-none drop-shadow-xl tracking-tighter">
                                 ${formatNum.format(acum_dia)}
@@ -209,15 +213,21 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                             </div>
                         </div>-->
                         
-                        <!-- Decoración Brillante -->
+                        <!-- Decoraciï¿½n Brillante -->
                         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent opacity-50 pointer-events-none"></div>
                     </div>
                 `;
 
                     container.insertAdjacentHTML('beforeend', cardHTML);
                 });
+
+                timerActualizacion = setTimeout(updateDashboard,time,params,transaction, indicador,time);
             })
-            .catch(err => console.error("Error:", err));
+            .catch(err => {
+                console.error("Error:", err)
+                let time_new =  time * 1.15;
+                timerActualizacion = setTimeout(updateDashboard, time_new, params, transaction, indicador, time);
+            });
     }
 
     function valida_meta(valor1, valor2) {
