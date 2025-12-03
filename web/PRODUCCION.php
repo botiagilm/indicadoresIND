@@ -151,6 +151,24 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     </div>
 
     <script>
+        // --- RELOJ INDEPENDIENTE ---
+        function actualizarReloj() {
+            const now = new Date();
+            document.getElementById('reloj').innerText = now.toLocaleTimeString('es-MX', {
+                hour12: false
+            });
+            document.getElementById('fecha').innerText = now.toLocaleDateString('es-MX', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short'
+            }).toUpperCase();
+        }
+
+        // Iniciar el reloj al cargar la página y actualizarlo cada segundo
+        document.addEventListener('DOMContentLoaded', () => {
+            actualizarReloj(); // Primera ejecución inmediata
+            setInterval(actualizarReloj, 1000); // Actualizar cada segundo
+        });
         // --- ACTUALIZACIÓN ---
         const formatNum = new Intl.NumberFormat('es-MX');
         let timerActualizacion = null;
@@ -171,28 +189,17 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                     let params = response.data[0].params;
                     let url = response.data[0].T_URL;
                     //setInterval(updateDashboard, time, params, url, response.indicador);
-                    updateDashboard(params, url, response.indicador,time);
+                    updateDashboard(params, url, response.indicador, time);
                 })
                 .catch(err => console.error("Error:", err));
         }
 
-        function updateDashboard(params, transaction, indicador,time) {
+        function updateDashboard(params, transaction, indicador, time) {
             // limpiar timeout previo
             if (timerActualizacion) {
                 clearTimeout(timerActualizacion);
             }
-            // Reloj
-            const now = new Date();
-            document.getElementById('reloj').innerText = now.toLocaleTimeString('es-MX', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            document.getElementById('fecha').innerText = now.toLocaleDateString('es-MX', {
-                weekday: 'short',
-                day: 'numeric',
-                month: 'short'
-            });
-
+            
             let formData = new FormData();
             formData.append("METODO", "get_mii_query");
             formData.append("PARAMS", params);
@@ -202,7 +209,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             fetch('../api/functions.php', {
                     method: "POST",
                     body: formData,
-                    timeout:10000 // 10 segundos
+                    timeout: 10000 // 10 segundos
                 })
                 .then((response) => response.json())
                 .then((response) => {
@@ -237,12 +244,12 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
 
                     // Scrap Mensual (Nuevo)
                     //document.getElementById('val-mensual-scrap').innerText = formatNum.format(0);
-                    timerActualizacion = setTimeout(updateDashboard,time,params,transaction, indicador,time);
+                    timerActualizacion = setTimeout(updateDashboard, time, params, transaction, indicador, time);
                 })
                 .catch(err => {
                     console.error("Error:", err)
-                    let time_new =  time *1.15;
-                    timerActualizacion = setTimeout(updateDashboard,time_new,params,transaction, indicador,time);   
+                    let time_new = time * 1.15;
+                    timerActualizacion = setTimeout(updateDashboard, time_new, params, transaction, indicador, time);
                 });
         }
 

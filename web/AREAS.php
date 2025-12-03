@@ -37,6 +37,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             border: 3px solid #ffffffff;
             box-shadow: 0 10px 25px -5px rgba(58, 58, 58, 0.4);
         }
+
         /* VERDE: Producción Óptima */
         .card-verde {
             background: linear-gradient(145deg, #059669, #047857);
@@ -103,6 +104,26 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
 </div>
 
 <script>
+    // --- RELOJ INDEPENDIENTE ---
+    function actualizarReloj() {
+        const now = new Date();
+        document.getElementById('reloj').innerText = now.toLocaleTimeString('es-MX', {
+            hour12: false
+        });
+        document.getElementById('fecha').innerText = now.toLocaleDateString('es-MX', {
+            weekday: 'short',
+            day: 'numeric',
+            month: 'short'
+        }).toUpperCase();
+    }
+
+    // Iniciar el reloj al cargar la página y actualizarlo cada segundo
+    document.addEventListener('DOMContentLoaded', () => {
+        actualizarReloj(); // Primera ejecución inmediata
+        setInterval(actualizarReloj, 1000); // Actualizar cada segundo
+    });
+
+
     // --- 1. DATOS DUMMY (SIMULACIÓN DE BASE DE DATOS) ---
     // Estos son los datos base que usara el sistema
 
@@ -127,29 +148,19 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                 let params = response.data[0].params;
                 let url = response.data[0].T_URL;
                 //setInterval(updateDashboard, time, params,url,response.indicador);
-                updateDashboard(params,url,response.indicador,time);
+                updateDashboard(params, url, response.indicador, time);
             })
             .catch(err => console.error("Error:", err));
     }
 
     // --- 3. ACTUALIZACIÓN DEL DASHBOARD ---
-    function updateDashboard(params,transaction,indicador,time) {
+    function updateDashboard(params, transaction, indicador, time) {
         // limpiar timeout previo
         if (timerActualizacion) {
             clearTimeout(timerActualizacion);
         }
-        // A. Reloj
-        const now = new Date();
-        document.getElementById('reloj').innerText = now.toLocaleTimeString('es-MX', {
-            hour12: false
-        });
-        document.getElementById('fecha').innerText = now.toLocaleDateString('es-MX', {
-            weekday: 'short',
-            day: 'numeric',
-            month: 'short'
-        }).toUpperCase();
-
-	let formData = new FormData();
+        // A. Obtener Datos
+        let formData = new FormData();
         formData.append("METODO", "get_mii_query");
         formData.append("PARAMS", params);
         formData.append("TRANSACTION", transaction);
@@ -159,22 +170,22 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
         fetch('../api/functions.php', {
                 method: "POST",
                 body: formData,
-                timeout:10000 // 10 segundos
+                timeout: 10000 // 10 segundos
             })
             .then((response) => response.json())
             .then((response) => {
                 container.innerHTML = '';
                 const data = response.data;
                 data.forEach(line => {
-                    let 
+                    let
                         meta_dia = line.META,
                         acum_dia = line.NOTIFICACION,
                         workc = line.WORK_CENTER,
                         estado = valida_meta(acum_dia, meta_dia),
-                        porcentaje = (acum_dia / meta_dia)*100;
+                        porcentaje = (acum_dia / meta_dia) * 100;
                     // Determinar estilos según estado
                     const isVerde = estado === 'GREEN';
-                    const cssClass =  isVerde ? 'card-verde' : estado === 'BLACK' ? 'card-gris':'card-rojo';
+                    const cssClass = isVerde ? 'card-verde' : estado === 'BLACK' ? 'card-gris' : 'card-rojo';
                     const textColor = 'text-white';
                     const barBg = 'bg-black/30';
                     const barFill = 'bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]';
@@ -222,11 +233,11 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
                     container.insertAdjacentHTML('beforeend', cardHTML);
                 });
 
-                timerActualizacion = setTimeout(updateDashboard,time,params,transaction, indicador,time);
+                timerActualizacion = setTimeout(updateDashboard, time, params, transaction, indicador, time);
             })
             .catch(err => {
                 console.error("Error:", err)
-                let time_new =  time * 1.15;
+                let time_new = time * 1.5;
                 timerActualizacion = setTimeout(updateDashboard, time_new, params, transaction, indicador, time);
             });
     }
