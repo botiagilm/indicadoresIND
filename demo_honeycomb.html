@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Monitor - Honeycomb Demo</title>
+    <link href="css/oswald.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        .honeycomb-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hexagon-wrapper {
+            position: relative;
+            width: 200px;
+            height: 230px;
+            margin: 10px;
+        }
+
+        .hexagon {
+            position: relative;
+            width: 200px;
+            height: 115px;
+            background: #334155;
+            margin: 57.5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .hexagon:before,
+        .hexagon:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            border-left: 100px solid transparent;
+            border-right: 100px solid transparent;
+        }
+
+        .hexagon:before {
+            bottom: 100%;
+            border-bottom: 57.5px solid #334155;
+        }
+
+        .hexagon:after {
+            top: 100%;
+            width: 0;
+            border-top: 57.5px solid #334155;
+        }
+
+        .hexagon.online {
+            background: linear-gradient(145deg, #059669, #047857);
+            animation: pulseGreen 2s ease-in-out infinite;
+        }
+
+        .hexagon.online:before {
+            border-bottom-color: #059669;
+        }
+
+        .hexagon.online:after {
+            border-top-color: #047857;
+        }
+
+        .hexagon.offline {
+            background: linear-gradient(145deg, #dc2626, #b91c1c);
+            animation: pulseRed 1.5s ease-in-out infinite;
+        }
+
+        .hexagon.offline:before {
+            border-bottom-color: #dc2626;
+        }
+
+        .hexagon.offline:after {
+            border-top-color: #b91c1c;
+        }
+
+        .hexagon.checking {
+            background: linear-gradient(145deg, #f59e0b, #d97706);
+            animation: pulseYellow 1s ease-in-out infinite;
+        }
+
+        .hexagon.checking:before {
+            border-bottom-color: #f59e0b;
+        }
+
+        .hexagon.checking:after {
+            border-top-color: #d97706;
+        }
+
+        @keyframes pulseGreen {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(5, 150, 105, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(5, 150, 105, 0.8);
+            }
+        }
+
+        @keyframes pulseRed {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
+            }
+        }
+
+        @keyframes pulseYellow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(245, 158, 11, 0.8);
+            }
+        }
+
+        .hexagon-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .server-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .server-ip {
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            margin-bottom: 0.3rem;
+        }
+
+        .server-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .response-time {
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            margin-top: 0.2rem;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(30, 41, 59, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #475569;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .legend-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 0.8rem;
+        }
+
+        .legend-color.online {
+            background: #059669;
+            box-shadow: 0 0 10px rgba(5, 150, 105, 0.5);
+        }
+
+        .legend-color.offline {
+            background: #dc2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+
+        .legend-color.checking {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .demo-note {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(59, 130, 246, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #3b82f6;
+            font-size: 0.9rem;
+            max-width: 300px;
+        }
+
+        .demo-note h3 {
+            margin: 0 0 0.5rem 0;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🍯 Monitor de Servidores</h1>
+        <p>Demostración de Visualización en Panal Hexagonal</p>
+    </div>
+
+    <div class="demo-note">
+        <h3>📌 Demo Estática</h3>
+        <p>Esta es una demostración visual. Los estados mostrados son ejemplos. Para funcionalidad completa, use web/SERVER_MONITOR.php</p>
+    </div>
+
+    <div class="honeycomb-container">
+        <!-- Demo Server 1 - Online -->
+        <div class="hexagon-wrapper">
+            <div class="hexagon online">
+                <div class="hexagon-content">
+                    <div class="server-name">Database Server</div>
+                    <div class="server-ip">10.21.10.20</div>
+                    <div class="server-status">EN LÍNEA</div>
+                    <div class="response-time">45.2 ms</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Server 2 - Online -->
+        <div class="hexagon-wrapper">
+            <div class="hexagon online">
+                <div class="hexagon-content">
+                    <div class="server-name">Web Server</div>
+                    <div class="server-ip">10.21.10.21</div>
+                    <div class="server-status">EN LÍNEA</div>
+                    <div class="response-time">32.8 ms</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Server 3 - Offline -->
+        <div class="hexagon-wrapper">
+            <div class="hexagon offline">
+                <div class="hexagon-content">
+                    <div class="server-name">API Server</div>
+                    <div class="server-ip">10.21.10.22</div>
+                    <div class="server-status">FUERA DE LÍNEA</div>
+                    <div class="response-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Server 4 - Online -->
+        <div class="hexagon-wrapper">
+            <div class="hexagon online">
+                <div class="hexagon-content">
+                    <div class="server-name">Backup Server</div>
+                    <div class="server-ip">10.21.10.23</div>
+                    <div class="server-status">EN LÍNEA</div>
+                    <div class="response-time">78.5 ms</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Server 5 - Checking -->
+        <div class="hexagon-wrapper">
+            <div class="hexagon checking">
+                <div class="hexagon-content">
+                    <div class="server-name">File Server</div>
+                    <div class="server-ip">10.21.10.24</div>
+                    <div class="server-status">Verificando...</div>
+                    <div class="response-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Server 6 - Online -->
+        <div class="hexagon-wrapper">
+            <div class="hexagon online">
+                <div class="hexagon-content">
+                    <div class="server-name">App Server 1</div>
+                    <div class="server-ip">10.21.10.25</div>
+                    <div class="server-status">EN LÍNEA</div>
+                    <div class="response-time">52.1 ms</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-title">Estado de Servidores</div>
+        <div class="legend-item">
+            <div class="legend-color online"></div>
+            <span>En Línea (5)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color offline"></div>
+            <span>Fuera de Línea (1)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color checking"></div>
+            <span>Verificando... (1)</span>
+        </div>
+    </div>
+
+    <script>
+        // Simple animation to cycle one hexagon's state for demo purposes
+        let demoIndex = 0;
+        const hexagons = document.querySelectorAll('.hexagon');
+        
+        setInterval(() => {
+            // Randomly change the checking server to show animation
+            const checkingHex = document.querySelector('.hexagon.checking');
+            if (checkingHex && Math.random() > 0.5) {
+                checkingHex.classList.remove('checking');
+                checkingHex.classList.add('online');
+                checkingHex.querySelector('.server-status').textContent = 'EN LÍNEA';
+                checkingHex.querySelector('.response-time').textContent = '64.3 ms';
+                
+                setTimeout(() => {
+                    checkingHex.classList.remove('online');
+                    checkingHex.classList.add('checking');
+                    checkingHex.querySelector('.server-status').textContent = 'Verificando...';
+                    checkingHex.querySelector('.response-time').textContent = '';
+                }, 3000);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

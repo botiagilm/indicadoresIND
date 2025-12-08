@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Server Monitor API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border-left: 4px solid #007bff;
+        }
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.online {
+            background: #28a745;
+            color: white;
+        }
+        .status.offline {
+            background: #dc3545;
+            color: white;
+        }
+        .status.error {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Server Monitor API</h1>
+        
+        <h2>1. Test Get Servers</h2>
+        <button onclick="testGetServers()">Get Servers List</button>
+        <div id="result1" class="result" style="display:none;"></div>
+        
+        <h2>2. Test Ping Single Server</h2>
+        <input type="text" id="serverIp" placeholder="Enter IP (e.g., 8.8.8.8)" style="padding: 8px; width: 200px;">
+        <button onclick="testPingServer()">Ping Server</button>
+        <div id="result2" class="result" style="display:none;"></div>
+        
+        <h2>3. Test Ping All Servers</h2>
+        <button onclick="testPingAllServers()">Ping All Servers</button>
+        <div id="result3" class="result" style="display:none;"></div>
+
+        <h2>4. Visual Preview</h2>
+        <button onclick="openMonitor()">Open Server Monitor</button>
+        <p style="color: #666; font-size: 14px;">Opens the honeycomb visualization in a new window</p>
+    </div>
+
+    <script src="js/jquery/jquery.min.js"></script>
+    <script>
+        function testGetServers() {
+            showLoading('result1', 'Loading servers...');
+            
+            $.ajax({
+                type: "POST",
+                data: { METODO: "get_servers" },
+                dataType: 'json',
+                url: "api/functions.php",
+                success: function(response) {
+                    let html = '<h3>✅ Success!</h3>';
+                    html += '<p>Found ' + (response.data ? response.data.length : 0) + ' servers</p>';
+                    html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+                    showResult('result1', html);
+                },
+                error: function(err) {
+                    showResult('result1', '<h3>❌ Error!</h3><pre>' + JSON.stringify(err, null, 2) + '</pre>');
+                }
+            });
+        }
+
+        function testPingServer() {
+            const ip = document.getElementById('serverIp').value;
+            if (!ip) {
+                alert('Please enter an IP address');
+                return;
+            }
+            
+            showLoading('result2', 'Pinging ' + ip + '...');
+            
+            $.ajax({
+                type: "POST",
+                data: { 
+                    METODO: "ping_server",
+                    SERVER_IP: ip
+                },
+                dataType: 'json',
+                url: "api/functions.php",
+                success: function(response) {
+                    let html = '<h3>✅ Ping Result</h3>';
+                    html += '<p>IP: ' + ip;
+                    
+                    if (response.data && response.data.status) {
+                        const status = response.data.status;
+                        html += '<span class="status ' + status + '">' + status.toUpperCase() + '</span></p>';
+                        if (response.data.response_time) {
+                            html += '<p>Response Time: <strong>' + response.data.response_time + ' ms</strong></p>';
+                        }
+                    }
+                    
+                    html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+                    showResult('result2', html);
+                },
+                error: function(err) {
+                    showResult('result2', '<h3>❌ Error!</h3><pre>' + JSON.stringify(err, null, 2) + '</pre>');
+                }
+            });
+        }
+
+        function testPingAllServers() {
+            showLoading('result3', 'Pinging all servers...');
+            
+            $.ajax({
+                type: "POST",
+                data: { METODO: "ping_all_servers" },
+                dataType: 'json',
+                url: "api/functions.php",
+                success: function(response) {
+                    let html = '<h3>✅ Ping All Servers Result</h3>';
+                    
+                    if (response.data && response.data.length > 0) {
+                        html += '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">';
+                        html += '<tr style="background: #e9ecef;"><th style="padding: 8px; text-align: left;">Server</th><th style="padding: 8px; text-align: left;">IP</th><th style="padding: 8px; text-align: left;">Status</th><th style="padding: 8px; text-align: left;">Time (ms)</th></tr>';
+                        
+                        response.data.forEach(server => {
+                            html += '<tr style="border-bottom: 1px solid #dee2e6;">';
+                            html += '<td style="padding: 8px;">' + server.SERVER_NAME + '</td>';
+                            html += '<td style="padding: 8px;">' + server.SERVER_IP + '</td>';
+                            html += '<td style="padding: 8px;"><span class="status ' + server.STATUS + '">' + server.STATUS.toUpperCase() + '</span></td>';
+                            html += '<td style="padding: 8px;">' + (server.RESPONSE_TIME || '-') + '</td>';
+                            html += '</tr>';
+                        });
+                        
+                        html += '</table>';
+                    }
+                    
+                    html += '<details style="margin-top: 15px;"><summary style="cursor: pointer; font-weight: bold;">Raw JSON Response</summary>';
+                    html += '<pre>' + JSON.stringify(response, null, 2) + '</pre>';
+                    html += '</details>';
+                    
+                    showResult('result3', html);
+                },
+                error: function(err) {
+                    showResult('result3', '<h3>❌ Error!</h3><pre>' + JSON.stringify(err, null, 2) + '</pre>');
+                }
+            });
+        }
+
+        function openMonitor() {
+            window.open('web/SERVER_MONITOR.php', '_blank', 'width=1400,height=900');
+        }
+
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = '<p>⏳ ' + message + '</p>';
+        }
+
+        function showResult(elementId, html) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = html;
+        }
+
+        // Auto-fill with a known public IP for testing
+        document.getElementById('serverIp').value = '8.8.8.8';
+    </script>
+</body>
+</html>
