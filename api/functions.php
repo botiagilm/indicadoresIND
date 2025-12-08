@@ -32,6 +32,31 @@
                 $data =curl_wsdl_mii($transaction,$data_params);
                 $response = $data;
                 break;
+            case "get_servers":
+                $conn = OpenConnection();
+                $response = GetResults($conn,"EXEC GET_SERVERS");
+                CloseConnection($conn);
+                break;
+            case "ping_server":
+                $server_ip = isset($_POST["SERVER_IP"]) ? $_POST["SERVER_IP"] : null;
+                $response = ping_server($server_ip);
+                break;
+            case "ping_all_servers":
+                $conn = OpenConnection();
+                $servers = GetResults($conn,"EXEC GET_SERVERS");
+                CloseConnection($conn);
+                $response = array();
+                foreach($servers as $server) {
+                    $ping_result = ping_server($server->SERVER_IP);
+                    $response[] = array(
+                        'SERVER_ID' => $server->SERVER_ID,
+                        'SERVER_NAME' => $server->SERVER_NAME,
+                        'SERVER_IP' => $server->SERVER_IP,
+                        'STATUS' => $ping_result['status'],
+                        'RESPONSE_TIME' => $ping_result['response_time']
+                    );
+                }
+                break;
         }
         http_response_code(200);
         $res = json_encode(array('data'=>$response,"indicador"=>$indicador));
@@ -63,6 +88,41 @@
             return false;
         }
         
+    }
+
+    function ping_server($server_ip) {
+        if (empty($server_ip)) {
+            return array('status' => 'error', 'response_time' => null, 'message' => 'No IP provided');
+        }
+
+        // Validate IP address
+        if (!filter_var($server_ip, FILTER_VALIDATE_IP)) {
+            return array('status' => 'error', 'response_time' => null, 'message' => 'Invalid IP address');
+        }
+
+        $start_time = microtime(true);
+        
+        // Use fsockopen for a quick connectivity check (port 80)
+        $timeout = 2;
+        $fp = @fsockopen($server_ip, 80, $errno, $errstr, $timeout);
+        
+        if (!$fp) {
+            // Try ping command as fallback
+            $ping_result = exec("ping -c 1 -W 2 " . escapeshellarg($server_ip) . " 2>&1", $output, $return_var);
+            
+            if ($return_var === 0) {
+                $end_time = microtime(true);
+                $response_time = round(($end_time - $start_time) * 1000, 2);
+                return array('status' => 'online', 'response_time' => $response_time);
+            } else {
+                return array('status' => 'offline', 'response_time' => null, 'message' => 'Server unreachable');
+            }
+        } else {
+            fclose($fp);
+            $end_time = microtime(true);
+            $response_time = round(($end_time - $start_time) * 1000, 2);
+            return array('status' => 'online', 'response_time' => $response_time);
+        }
     }
 
 ?>
