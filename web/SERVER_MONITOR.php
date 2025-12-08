@@ -9,7 +9,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT");
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="Last-Modified" content="0">
-    <meta http-equiv="Cache-Control" content="no-cache, mustrevalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <link href="../css/oswald.css" rel="stylesheet">
     

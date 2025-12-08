@@ -118,7 +118,7 @@ Ambos métodos tienen un timeout de 2 segundos para evitar bloqueos.
 
 ### Cambiar el Intervalo de Actualización
 
-Edita `web/SERVER_MONITOR.php`, línea ~560:
+Edita `web/SERVER_MONITOR.php`, línea ~474 en la sección JavaScript:
 
 ```javascript
 updateInterval = setInterval(() => {
