@@ -29,6 +29,7 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
     <script src="js/jquery/jquery.min.js"></script>
     <script src="js/bootstrap/js/bootstrap.min.js"></script>
     <script>
+        
         crear_frames();
         init();
         function crear_frames(){
@@ -113,6 +114,49 @@ header("Expires: Sat, 1 Jul 2000 05:00:00 GMT"); // Fecha en el pasado
             var element = document.getElementById(id);
             element.classList.add("fullpage");
         }
-    
+        
+        // Validar si  el device necesita actualizarse
+        function ValidaActualizacion() {
+            let formData = new FormData();
+            formData.append("METODO", "get_reload");
+            fetch('../api/functions.php', {
+                    method: "POST",
+                    body: formData
+                })
+                .then((response) => response.json())
+                .then((response) => {
+                    let reload = response.data[0].DEV_RELOAD;
+                    let diferencia = response.data[0].DIFERENCIA;
+                    if (reload == 1 || diferencia == 1) {
+                        location.reload();
+                        updateReloadStatus();
+                    } else {
+                        setTimeout(() => {
+                            ValidaActualizacion();
+                        }, 15000);
+                    }
+                })
+                .catch(err => {
+                    setTimeout(() => {
+                        ValidaActualizacion();
+                    }, 15000);
+                });
+        }
+
+        function updateReloadStatus() {
+            let formData = new FormData();
+            formData.append("METODO", "update_reload");
+            fetch('../api/functions.php', {
+                    method: "POST",
+                    body: formData
+                })
+                .then((response) => response.json())
+                .then((response) => {
+                    console.log("Reload status updated.");
+                })
+                .catch(err => {
+                    console.log("Error updating reload status:", err);
+                });
+        }
     </script>
 </html>
